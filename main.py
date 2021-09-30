@@ -6,10 +6,9 @@ from discord.ext import tasks, commands
 import time
 
 # Token for client login
-TOKEN = 'ODkzMTYzMjg0MzgxOTgyNzgx.YVXdIQ.dTnQkGoilWRDSwskVO8kze3yamI'
+TOKEN = ''
 THREADS = []
-CHRISTIAN_ID = 203210022644219904
-SERETIC_ID = 197636877845528576
+WHITELIST = [203210022644219904, 197636877845528576]
 client = discord.Client()
 
 
@@ -52,7 +51,7 @@ async def on_message(message):
 
     # DM detector for apple trivia
     if not message.guild:
-        if "AT login" in message.content and (message.author.id == SERETIC_ID or message.author.id == CHRISTIAN_ID):
+        if "AT login" in message.content and message.author.id in WHITELIST:
             #await appleTrivia(message)
 
             apple_task = asyncio.create_task(appleTrivia(message.author))
