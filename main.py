@@ -8,7 +8,7 @@ import time
 # Token for client login
 TOKEN = ''
 THREADS = []
-WHITELIST = [203210022644219904, 197636877845528576]
+WHITELIST = []
 client = discord.Client()
 
 
