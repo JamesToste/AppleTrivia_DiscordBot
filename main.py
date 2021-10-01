@@ -14,18 +14,6 @@ client = discord.Client()
 
 # Main 'Apple Trivia' driver
 async def appleTrivia(authr):
-    """
-    counter = 0
-    await authr.send("Hello, Christian. What should the question for Apple Trivia be?")
-    question = await client.wait_for('message', check=lambda message: message.author != client.user)
-    await auth.send(question.content)
-    while counter < 5:
-        counter += 1
-        #print(time.clock_gettime(time.CLOCK_BOOTTIME))
-        await auth.send("Await " + str(counter))
-        await asyncio.sleep(2)
-    await auth.send("Done waiting")
-    """
     # Embed message with all of the options
     embedAT = discord.Embed(title="Apple Trivia", description="Hello Christian, what do you want to do?")
     embedAT.add_field(name="\U00002753 option", value="Start a new trivia question", inline=False)
