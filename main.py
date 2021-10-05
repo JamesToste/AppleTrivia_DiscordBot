@@ -12,28 +12,36 @@ WHITELIST = []
 client = discord.Client()
 
 
+# Helper function for white list checking
+def whiteListCheck(message):
+    if message.author.id in WHITELIST:
+        return True
+    else:
+        return False
+
+
 # Main 'Apple Trivia' driver
 async def appleTrivia(authr):
     # Embed message with all of the options
-    embedAT = discord.Embed(title="Apple Trivia", description="Hello! What do you want to do?", color=0xFFFFFF)
-    embedAT.add_field(name="\U00002753 option"
-                      , value="Start a new trivia question"
-                      , inline=False)
+    embed_at = discord.Embed(title="Apple Trivia", description="Hello! What do you want to do?", color=0xFFFFFF)
+    embed_at.add_field(name="\U00002753 option"
+                       , value="Start a new trivia question"
+                       , inline=False)
 
-    embedAT.add_field(name="\U0000270F option"
-                      , value="Edit the currently running trivia question"
-                      , inline=False)
+    embed_at.add_field(name="\U0000270F option"
+                       , value="Edit the currently running trivia question"
+                       , inline=False)
 
-    embedAT.add_field(name="\U0000274C option"
-                      , value="Close the currently running trivia question"
-                      , inline=False)
+    embed_at.add_field(name="\U0000274C option"
+                       , value="Close the currently running trivia question"
+                       , inline=False)
 
-    embedAT.add_field(name="\U0001F4C4 option"
-                      , value="View details about the currently running trivia question"
-                      , inline=False)
+    embed_at.add_field(name="\U0001F4C4 option"
+                       , value="View details about the currently running trivia question"
+                       , inline=False)
 
     # Send message to user
-    msg = await authr.send(embed=embedAT)
+    msg = await authr.send(embed=embed_at)
 
     # Add reactions as the option buttons
     await msg.add_reaction('\U00002753')
@@ -42,13 +50,25 @@ async def appleTrivia(authr):
     await msg.add_reaction('\U0001F4C4')
 
 
+# New Question Option
+async def newQuestion(chnl):
+    embed_at = discord.Embed(title="Start a new question"
+                             , description="What should the new trivia question be?"
+                             , color=0xFFFFFF)
+
+    await chnl.send(embed=embed_at)
+    question = await client.wait_for('message', check=whiteListCheck)
+    print(question.content)
+
+
 
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
     await client.change_presence(activity=discord.Game('$help'))
 
-
+# Might not need the thread here since the bot is now dedicated to Apple Trivia.
+# Though might need to make a thread for a trivia question.
 @client.event
 async def on_message(message):
     if message.author == client.user:
@@ -82,33 +102,33 @@ async def on_raw_reaction_add(payload):
 
     user = client.get_user(payload.user_id)
 
+    # New Question
     if 'Apple Trivia' in embed.title and payload.emoji.name == '\U00002753' and payload.user_id in WHITELIST:
-        embedAT = discord.Embed(title="Start a new question"
-                                , description="What should the new trivia question be?"
-                                , color=0xFFFFFF)
+        await newQuestion(channel)
 
-        await channel.send(embed=embedAT)
-
+    # Edit Question
     if 'Apple Trivia' in embed.title and payload.emoji.name == '\U0000270F' and payload.user_id in WHITELIST:
-        embedAT = discord.Embed(title="Edit currently running trivia question"
+        embed_at = discord.Embed(title="Edit currently running trivia question"
                                 , description="What would you like to edit?"
                                 , color=0xFFFFFF)
 
-        await channel.send(embed=embedAT)
+        await channel.send(embed=embed_at)
 
+    # Close Question
     if 'Apple Trivia' in embed.title and payload.emoji.name == '\U0000274C' and payload.user_id in WHITELIST:
-        embedAT = discord.Embed(title="Close the currently running trivia question"
+        embed_at = discord.Embed(title="Close the currently running trivia question"
                                 , description="Are you sure?"
                                 , color=0xFFFFFF)
 
-        await channel.send(embed=embedAT)
+        await channel.send(embed=embed_at)
 
+    # Details of Question
     if 'Apple Trivia' in embed.title and payload.emoji.name == '\U0001F4C4' and payload.user_id in WHITELIST:
-        embedAT = discord.Embed(title="Details about currently running trivia question"
+        embed_at = discord.Embed(title="Details about currently running trivia question"
                                 , description="Details: your mom"
                                 , color=0xFFFFFF)
 
-        await channel.send(embed=embedAT)
+        await channel.send(embed=embed_at)
 
 
 # Maybe I can do away with this all together? Slows down the reaction adding by the bot since it /
@@ -117,7 +137,7 @@ async def on_raw_reaction_add(payload):
 async def on_reaction_add(reaction, user):
     #print("reaction was added")
     if 'Apple Trivia' in reaction.message.content and reaction.emoji == '\U00002753':
-        embedAT = discord.Embed(title="Start a new question", description="What should the new trivia question be?")
-        await user.send(embed=embedAT)
+        embed_at = discord.Embed(title="Start a new question", description="What should the new trivia question be?")
+        await user.send(embed=embed_at)
 
 client.run(TOKEN)
