@@ -5,19 +5,44 @@ import requests
 from discord.ext import tasks, commands
 import time
 
+
+# Class for holding information on a trivia question
+class TriviaQuestion:
+    #question = None
+    #answers = []
+    #end_time = None
+
+    def __init__(self):
+        self.question = None
+        self.answers = []
+        self.end_time = None
+
+    def changeQuestion(self, question):
+        self.question = question
+
+    def changeAnswers(self, answers):
+        self.answers = answers
+
+    def changeEndTime(self, end_time):
+        self.end_time = end_time
+
+    def resetTrivia(self):
+        self.question = None
+        self.answers = []
+        self.end_time = None
+
+
 # Token for client login
 TOKEN = ''
 THREADS = []
+QUESTION = TriviaQuestion()
 WHITELIST = []
 client = discord.Client()
 
 
 # Helper function for white list checking
 def whiteListCheck(message):
-    if message.author.id in WHITELIST:
-        return True
-    else:
-        return False
+    return message.author.id in WHITELIST
 
 
 # Main 'Apple Trivia' driver
@@ -59,6 +84,7 @@ async def newQuestion(chnl):
     await chnl.send(embed=embed_at)
     question = await client.wait_for('message', check=whiteListCheck)
     print(question.content)
+    QUESTION.changeQuestion(question.content)
 
 
 
@@ -66,6 +92,7 @@ async def newQuestion(chnl):
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
     await client.change_presence(activity=discord.Game('$help'))
+
 
 # Might not need the thread here since the bot is now dedicated to Apple Trivia.
 # Though might need to make a thread for a trivia question.
@@ -86,6 +113,9 @@ async def on_message(message):
         elif "AT login" in message.content and message.author.id not in WHITELIST:
             print(message.author)
             await message.author.send("Unauthorized attempted access. Your Discord name has been recorded!")
+
+        elif "Class check" in message.content:
+            print(QUESTION.question)
 
 
 # Looks for a raw reaction add since on_reaction_add can not scan DMChannel
@@ -133,11 +163,11 @@ async def on_raw_reaction_add(payload):
 
 # Maybe I can do away with this all together? Slows down the reaction adding by the bot since it /
 # triggers this function every time it adds one.
-@client.event
-async def on_reaction_add(reaction, user):
-    #print("reaction was added")
-    if 'Apple Trivia' in reaction.message.content and reaction.emoji == '\U00002753':
-        embed_at = discord.Embed(title="Start a new question", description="What should the new trivia question be?")
-        await user.send(embed=embed_at)
+#@client.event
+#async def on_reaction_add(reaction, user):
+#    #print("reaction was added")
+#    if 'Apple Trivia' in reaction.message.content and reaction.emoji == '\U00002753':
+#        embed_at = discord.Embed(title="Start a new question", description="What should the new trivia question be?")
+#        await user.send(embed=embed_at)
 
 client.run(TOKEN)
